@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mr. T</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: url('https://cdn.theatlantic.com/thumbor/NjAFiPLV7QeTrwpbVQByLTW8v8I=/570x365/media/img/posts/2013/11/PrincipalShead/original.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: sans-serif;
+      backdrop-filter: brightness(0.7);
+    }
+
+    .btn {
+      padding: 20px 40px;
+      font-size: 24px;
+      background: linear-gradient(45deg, #ff0055, #ffcc00);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      transform: translateX(-120px); /* Moved further left */
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1) translateX(-120px); }
+      50% { transform: scale(1.1) translateX(-120px); }
+      100% { transform: scale(1) translateX(-120px); }
+    }
+
+    #passPrompt {
+      display: none;
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn" onclick="start()">Mr. T</button>
+
+  <div id="passPrompt">
+    <p>Enter password to stop the process:</p>
+    <input type="password" id="passwordInput" placeholder="Password">
+    <button onclick="checkPassword()">Submit</button>
+  </div>
+
+  <script>
+    let interval;
+    let stop = false;
+    const targetURL = "https://github.com/Yuveii/mrtvrs/releases/download/mrt/MR.T.png"; // Replace with your desired URL
+
+    function start() {
+      document.querySelector(".btn").disabled = true;
+      document.getElementById("passPrompt").style.display = "block";
+
+      interval = setInterval(() => {
+        if (!stop) {
+          window.open(targetURL, "_blank");
+        }
+      }, 1500);
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput");
+      if (input.value === "gf4") {
+        clearInterval(interval);
+        stop = true;
+        alert("Correct password. The process has been stopped.");
+      } else {
+        alert("Incorrect password. No more attempts allowed.");
+        input.disabled = true;
+        document.querySelector("#passPrompt button").disabled = true;
+      }
+    }
+  </script>
+
+</body>
+</html>
