@@ -2,235 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LEND Terminal Tools</title>
+  <title>Mr. T</title>
   <style>
     body {
-      background: #000;
-      color: #0f0;
-      font-family: 'Futura', monospace;
       margin: 0;
-      padding: 20px;
-    }
-
-    #terminal {
-      white-space: pre-wrap;
-      overflow-y: auto;
-      max-height: 90vh;
-      font-size: 16px;
-    }
-
-    #input-line {
+      height: 100vh;
+      background: url('https://cdn.theatlantic.com/thumbor/NjAFiPLV7QeTrwpbVQByLTW8v8I=/570x365/media/img/posts/2013/11/PrincipalShead/original.png') no-repeat center center fixed;
+      background-size: cover;
       display: flex;
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: sans-serif;
+      backdrop-filter: brightness(0.7);
     }
 
-    #prompt {
-      margin-right: 8px;
-    }
-
-    input {
-      background: transparent;
+    .btn {
+      padding: 20px 40px;
+      font-size: 24px;
+      background: linear-gradient(45deg, #ff0055, #ffcc00);
       border: none;
-      color: #0f0;
-      font-family: 'Futura', monospace;
-      font-size: 16px;
-      outline: none;
-      width: 100%;
+      border-radius: 12px;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      transform: translateX(-120px); /* Moved further left */
     }
 
-    .tool {
+    @keyframes pulse {
+      0% { transform: scale(1) translateX(-120px); }
+      50% { transform: scale(1.1) translateX(-120px); }
+      100% { transform: scale(1) translateX(-120px); }
+    }
+
+    #passPrompt {
       display: none;
-      margin-top: 20px;
-      padding: 10px;
-      background: #111;
-      border: 1px solid #0f0;
+      margin-top: 30px;
+      text-align: center;
     }
 
-    textarea, input[type="text"] {
-      width: 100%;
-      background: #000;
-      color: #0f0;
-      border: 1px solid #0f0;
-      padding: 5px;
-      font-family: monospace;
-      margin-top: 10px;
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
     }
 
     button {
-      background: #0f0;
-      color: #000;
-      font-weight: bold;
-      padding: 5px 10px;
-      margin-top: 10px;
       cursor: pointer;
-    }
-
-    #intro {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: #0f0;
-      font-size: 20px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      z-index: 10;
-      animation: fadeIn 2s ease-in-out;
-    }
-
-    #intro h1 {
-      font-size: 30px;
-      margin-bottom: 20px;
-    }
-
-    #skipBtn {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #0f0;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
-      animation: fadeIn 2s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
     }
   </style>
 </head>
 <body>
 
-<!-- Intro Screen -->
-<div id="intro">
-  <h1>Welcome to LEND Terminal!</h1>
-  <p>Explore ethical hacking tools, learn about cybersecurity, and ensure your digital safety.</p>
-  <p>Type "help" to get started. You can skip the intro by clicking the button below.</p>
-  <button id="skipBtn">Skip Intro</button>
-</div>
+  <button class="btn" onclick="start()">Mr. T</button>
 
-<!-- Terminal -->
-<div id="terminal">
-  <div>LEND Terminal Interface v1.0</div>
-  <div>Type "help" to get started.</div>
-  <br />
-</div>
+  <div id="passPrompt">
+    <p>Enter password to stop the process:</p>
+    <input type="password" id="passwordInput" placeholder="Password">
+    <button onclick="checkPassword()">Submit</button>
+  </div>
 
-<div id="input-line">
-  <div id="prompt">&gt;</div>
-  <input type="text" id="commandInput" autocomplete="off" autofocus />
-</div>
+  <script>
+    let interval;
+    let stop = false;
+    const targetURL = "https://github.com/Yuveii/mrtvrs/releases/download/mrt/MR.T.png"; // Replace with your desired URL
 
-<!-- Tools -->
-<div id="jsScanner" class="tool">
-  <h3>JS Vulnerability Scanner</h3>
-  <textarea id="jsInput" placeholder="Paste your JavaScript code here..."></textarea>
-  <button onclick="scanJS()">Scan</button>
-  <div id="jsOutput"></div>
-</div>
+    function start() {
+      document.querySelector(".btn").disabled = true;
+      document.getElementById("passPrompt").style.display = "block";
 
-<div id="hashTool" class="tool">
-  <h3>Hash Generator (SHA256)</h3>
-  <input type="text" id="hashInput" placeholder="Enter text to hash...">
-  <button onclick="generateHash()">Generate</button>
-  <div id="hashOutput"></div>
-</div>
-
-<script>
-  // Terminal Logic
-  const terminal = document.getElementById("terminal");
-  const input = document.getElementById("commandInput");
-  const skipBtn = document.getElementById("skipBtn");
-  const intro = document.getElementById("intro");
-
-  const tools = {
-    jsscanner: document.getElementById("jsScanner"),
-    hash: document.getElementById("hashTool")
-  };
-
-  const commands = {
-    help: `
-Available commands:
-- help .............. Show this help menu
-- tools ............. Show all available tools
-- about ............. Info about LEND and cybersecurity
-- clear ............. Clear the terminal screen
-- jsscanner ......... Launch JS Vulnerability Scanner
-- hash .............. Launch SHA256 Hash Generator
-    `,
-    about: `
-LEND is an interactive hub for ethical hacking, cybersecurity, and creative utilities.
-Ethical hacking is crucial for securing systems, protecting data, and empowering awareness.
-    `,
-    tools: `
-Available Tools:
-- jsscanner ......... JavaScript Vulnerability Scanner
-- hash .............. SHA256 Hash Generator
-More tools coming soon!
-    `
-  };
-
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      const cmd = input.value.trim().toLowerCase();
-      terminal.innerHTML += `> ${cmd}\n`;
-
-      Object.values(tools).forEach(t => t.style.display = 'none');
-
-      if (cmd === "clear") {
-        terminal.innerHTML = "";
-      } else if (commands[cmd]) {
-        terminal.innerHTML += `${commands[cmd]}\n`;
-      } else if (tools[cmd]) {
-        tools[cmd].style.display = 'block';
-      } else {
-        terminal.innerHTML += `"${cmd}" is not recognized. Type "help" to view commands.\n`;
-      }
-
-      input.value = "";
-      terminal.scrollTop = terminal.scrollHeight;
+      interval = setInterval(() => {
+        if (!stop) {
+          window.open(targetURL, "_blank");
+        }
+      }, 1500);
     }
-  });
 
-  // Skip intro functionality
-  skipBtn.addEventListener("click", function () {
-    intro.style.display = "none";
-  });
-
-  function scanJS() {
-    const js = document.getElementById("jsInput").value;
-    let output = "";
-    if (!js) return;
-    if (js.includes("eval(")) output += "⚠️ Use of eval() is risky.\n";
-    if (js.includes("innerHTML")) output += "⚠️ innerHTML can lead to XSS.\n";
-    if (js.includes("document.write")) output += "⚠️ document.write can be insecure.\n";
-    if (output === "") output = "✅ No obvious vulnerabilities detected.";
-    document.getElementById("jsOutput").innerText = output;
-  }
-
-  async function generateHash() {
-    const input = document.getElementById("hashInput").value;
-    const buffer = new TextEncoder().encode(input);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    document.getElementById("hashOutput").innerText = hashHex;
-  }
-</script>
+    function checkPassword() {
+      const input = document.getElementById("passwordInput");
+      if (input.value === "gf4") {
+        clearInterval(interval);
+        stop = true;
+        alert("Correct password. The process has been stopped.");
+      } else {
+        alert("Incorrect password. No more attempts allowed.");
+        input.disabled = true;
+        document.querySelector("#passPrompt button").disabled = true;
+      }
+    }
+  </script>
 
 </body>
 </html>
